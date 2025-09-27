@@ -20,7 +20,7 @@
           </div>
           <div class="login">
             <a href="#"><img src="./Images/user.png" alt="LoginPhoto" /></a>
-            <p>Log in</p>
+            <a href="#"><p>Log in</p></a>
           </div>
         </nav>
       </header>
@@ -32,18 +32,118 @@
           <div class="right-side">
             <h2>Log in</h2>
             <form id="loginForm">
-              <div>
-                <label for="email">email</label>
-                <input type="email" id="email" name="email" />
+              <div class="emaillogin">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Email *"
+                />
               </div>
-              <br />
-              <div>
-                <label for="password">password</label>
-                <input type="password" id="password" name="password" />
+
+              <div class="passwordlogin">
+                <div class="password-container">
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password *"
+                  />
+                  <img
+                    src="./Images/Vector.png"
+                    alt="show password"
+                    class="password-toggle"
+                    data-target="password"
+                  />
+                </div>
               </div>
-              <br />
-              <div>
-                <button type="submit">login</button>
+
+              <div class="loginbutton">
+                <button type="submit">Log in</button>
+              </div>
+              <div class="registerdirect">
+                <p>
+                  Not a member?
+                  <span id="show-register">Register</span>
+                </p>
+              </div>
+            </form>
+          </div>
+          <div class="right-side registration">
+            <h2>Registration</h2>
+            <form id="registrationForm">
+              <div class="avatar-upload">
+                <img
+                  src="./Images/fall of Icarus.jpeg"
+                  alt="Fall of Icarus"
+                  id="avatar-preview"
+                  class="avatar-preview"
+                />
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  style="display: none"
+                  accept="image/*"
+                />
+                <div class="upload-buttons">
+                  <button type="button" class="upload-new">Upload new</button>
+                  <button type="button" class="remove">Remove</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Username *"
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="email"
+                  id="email1"
+                  name="email1"
+                  placeholder="Email *"
+                />
+              </div>
+              <div class="form-group">
+                <div class="password-container">
+                  <input
+                    type="password"
+                    id="password1"
+                    name="password1"
+                    placeholder="Password *"
+                  />
+                  <img
+                    src="./Images/Vector.png"
+                    alt="show password"
+                    class="password-toggle"
+                    data-target="password1"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="password-container">
+                  <input
+                    type="password"
+                    id="password2"
+                    name="password2"
+                    placeholder="Confirm password *"
+                  />
+                  <img
+                    src="./Images/Vector.png"
+                    alt="show password"
+                    class="password-toggle"
+                    data-target="password2"
+                  />
+                </div>
+              </div>
+              <div class="register-button">
+                <button type="submit">Register</button>
+              </div>
+              <div class="logindirect">
+                <p>Already member? <span id="show-login">Log in</span></p>
               </div>
             </form>
           </div>
