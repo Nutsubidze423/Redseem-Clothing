@@ -1,0 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+.wrapper {
+  width: 1920px;
+  height: 1080px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+nav {
+  width: 1920px;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 100px;
+}
+.login {
+  display: flex;
+  width: 64px;
+  height: 20px;
+  align-items: center;
+  gap: 8px;
+}
+.login p {
+  font-family: Poppins;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+.main-container {
+  display: flex;
+}
+.left-side {
+  width: 948;
+  height: 1000;
+  opacity: 1;
+}
+.right-side {
+    width: 972px;
+    height: 1000px;
+    display: flex;
+    flex-direction: column;
+}
