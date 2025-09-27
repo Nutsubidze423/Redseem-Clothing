@@ -1,4 +1,26 @@
-// LOGIN FORM START
+// Cookie management functions
+function setCookie(name, value, days = 1) {
+  const maxAge = days * 24 * 60 * 60;
+  document.cookie = `${name}=${encodeURIComponent(
+    value
+  )}; path=/; max-age=${maxAge}; secure; samesite=strict`;
+}
+
+function getCookie(name) {
+  const cookies = document.cookie.split(";");
+  for (let cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split("=").map((c) => c.trim());
+    if (cookieName === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+
+function deleteCookie(name) {
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+}
+
 // Validation functions
 function validateEmail(email) {
   const emailRegex = /^[a-zA-Z0-9]{3,}@redberry\.ge$/;
@@ -15,10 +37,51 @@ function validateUsername(username) {
 
 function validateAvatar(file) {
   if (!file) return true;
+
   const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-  return allowedTypes.includes(file.type);
+  if (!allowedTypes.includes(file.type)) {
+    showError("Please upload an image file (jpg, png, gif, or webp)");
+    return false;
+  }
+
+  const maxSize = 1 * 1024 * 1024;
+  if (file.size > maxSize) {
+    showError("Image size must be less than 1MB");
+    return false;
+  }
+
+  return true;
 }
 
+// Show error message function
+function showError(message) {
+  const existingError = document.querySelector(".register-error-message");
+  if (existingError) {
+    existingError.remove();
+  }
+
+  const errorMsg = document.createElement("div");
+  errorMsg.className = "register-error-message";
+  errorMsg.textContent = message;
+  errorMsg.style.color = "red";
+  errorMsg.style.marginTop = "10px";
+  errorMsg.style.fontFamily = "Poppins";
+  errorMsg.style.textAlign = "left";
+
+  const registrationForm = document.querySelector("#registrationForm");
+  registrationForm.insertBefore(
+    errorMsg,
+    registrationForm.querySelector(".register-button")
+  );
+
+  setTimeout(() => {
+    if (errorMsg && errorMsg.parentNode) {
+      errorMsg.remove();
+    }
+  }, 2000);
+}
+
+// Login form handling
 const loginFormElement = document.querySelector("#loginForm");
 
 loginFormElement.addEventListener("submit", async (e) => {
@@ -42,16 +105,19 @@ loginFormElement.addEventListener("submit", async (e) => {
     password: password,
   };
 
-  loginUser(userCredentials);
-});
-
-async function loginUser(credentials) {
   try {
     const response = await axios.post(
       "https://api.redseam.redberryinternship.ge/api/login",
-      credentials
+      userCredentials,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
     console.log("Login success:", response.data);
+    setCookie("authToken", response.data.token);
+    window.location.href = "shop.html";
   } catch (error) {
     const rightSide = document.querySelector(".right-side");
     if (rightSide) {
@@ -74,9 +140,9 @@ async function loginUser(credentials) {
     }
     console.error("Login error:", error.response?.data || error.message);
   }
-}
+});
 
-// Password visibility toggle functionality
+// Password visibility toggle
 const passwordToggles = document.querySelectorAll(".password-toggle");
 
 passwordToggles.forEach((toggle) => {
@@ -126,8 +192,7 @@ showLoginSpan.addEventListener("click", () => {
   loginFormContainer.style.display = "flex";
 });
 
-// LOGIN FORM +SWITCHING BETWEEN REGISTER AND LOGIN END
-// REGISTER FORM START
+// Registration form handling
 const registrationForm = document.querySelector("#registrationForm");
 const uploadNewButton = document.querySelector(".upload-new");
 const removeButton = document.querySelector(".remove");
@@ -158,25 +223,10 @@ removeButton.addEventListener("click", () => {
   avatarPreview.style.display = "none";
 });
 
-
-function showError(message) {
-  removeErrorMessages();
-  const errorMsg = document.createElement("div");
-  errorMsg.className = "register-error-message";
-  errorMsg.textContent = message;
-  errorMsg.style.color = "red";
-  errorMsg.style.marginTop = "10px";
-  errorMsg.style.fontFamily = "Poppins";
-  errorMsg.style.textAlign = "left";
-  registrationForm.insertBefore(
-    errorMsg,
-    registrationForm.querySelector(".register-button")
-  );
-}
-
+// Registration form submission
 registrationForm.addEventListener("submit", async (e) => {
   e.preventDefault();
- 
+
   const email = document.querySelector("#email1").value;
   const username = document.querySelector("#username").value;
   const password = document.querySelector("#password1").value;
@@ -204,7 +254,6 @@ registrationForm.addEventListener("submit", async (e) => {
   }
 
   if (avatar && !validateAvatar(avatar)) {
-    showError("Avatar must be an image file (jpg, png, gif, webp)");
     return;
   }
 
@@ -218,25 +267,32 @@ registrationForm.addEventListener("submit", async (e) => {
     formData.append("avatar", avatar);
   }
 
-  userRegister(formData);
-});
-
-async function userRegister(formData) {
   try {
     const response = await axios.post(
       "https://api.redseam.redberryinternship.ge/api/register",
       formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
 
     console.log("Registration success:", response.data);
-    registrationFormContainer.style.display = "none";
-    loginFormContainer.style.display = "flex";
-    showError("Registration successful! Please log in.");
+    setCookie("authToken", response.data.token);
+
+    if (avatar) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCookie("userAvatar", e.target.result);
+      };
+      reader.readAsDataURL(avatar);
+    }
+
+    window.location.href = "shop.html";
   } catch (error) {
     console.error("Registration error:", error.response?.data || error.message);
 
-    // Handle specific error cases
     if (error.response?.data) {
       const errors = error.response.data;
       if (errors.email) {
@@ -250,4 +306,4 @@ async function userRegister(formData) {
       showError("An error occurred. Please try again.");
     }
   }
-}
+});
