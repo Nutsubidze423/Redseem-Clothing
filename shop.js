@@ -13,6 +13,11 @@ function deleteCookie(name) {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 }
 
+let currentFilters = {
+  priceFrom: null,
+  priceTo: null,
+};
+
 async function fetchProducts(page = 1) {
   try {
     const token = getCookie("authToken");
@@ -20,14 +25,21 @@ async function fetchProducts(page = 1) {
       throw new Error("No auth token found");
     }
 
-    const response = await axios.get(
-      `https://api.redseam.redberryinternship.ge/api/products?page=${page}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    let url = `https://api.redseam.redberryinternship.ge/api/products?page=${page}`;
+
+    
+    if (currentFilters.priceFrom !== null) {
+      url += `&priceFrom=${currentFilters.priceFrom}`;
+    }
+    if (currentFilters.priceTo !== null) {
+      url += `&priceTo=${currentFilters.priceTo}`;
+    }
+
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -49,9 +61,66 @@ function createProductCard(product) {
   return card;
 }
 
-async function displayProducts() {
+function createPagination(currentPage, totalPages) {
+  const pageNumbers = document.querySelector(".page-numbers");
+  pageNumbers.innerHTML = "";
+
+  function addPageButton(num) {
+    const button = document.createElement("button");
+    button.className = `page-number${currentPage === num ? " active" : ""}`;
+    button.textContent = num;
+    button.onclick = () => loadPage(num);
+    return button;
+  }
+
+  function addDots() {
+    const dots = document.createElement("span");
+    dots.className = "page-dots";
+    dots.textContent = "...";
+    return dots;
+  }
+
+ 
+  const prevButton = document.querySelector(".prev");
+  prevButton.disabled = currentPage === 1;
+
+  
+  const nextButton = document.querySelector(".next");
+  nextButton.disabled = currentPage === totalPages;
+
+ 
+  if (currentPage <= 4) {
+    for (let i = 1; i <= Math.min(5, totalPages); i++) {
+      pageNumbers.appendChild(addPageButton(i));
+    }
+    if (totalPages > 5) {
+      pageNumbers.appendChild(addDots());
+      pageNumbers.appendChild(addPageButton(totalPages));
+    }
+  }
+  
+  else if (currentPage > totalPages - 4) {
+    pageNumbers.appendChild(addPageButton(1));
+    pageNumbers.appendChild(addDots());
+    for (let i = totalPages - 4; i <= totalPages; i++) {
+      pageNumbers.appendChild(addPageButton(i));
+    }
+  }
+ 
+  else {
+    pageNumbers.appendChild(addPageButton(1));
+    pageNumbers.appendChild(addDots());
+    for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+      pageNumbers.appendChild(addPageButton(i));
+    }
+    pageNumbers.appendChild(addDots());
+    pageNumbers.appendChild(addPageButton(totalPages));
+  }
+}
+
+async function displayProducts(page = 1) {
   const productContainer = document.getElementById("productContainer");
-  const products = await fetchProducts(1);
+  const products = await fetchProducts(page);
 
   if (products && products.data) {
     productContainer.innerHTML = "";
@@ -63,11 +132,21 @@ async function displayProducts() {
 
     const resultsCount = document.querySelector(".right-side-bar p");
     if (resultsCount) {
-      resultsCount.textContent = `Showing ${products.data.length} of ${products.total} results`;
+      const start = (page - 1) * products.data.length + 1;
+      const end = start + products.data.length - 1;
+      resultsCount.textContent = `Showing ${start}-${end} of ${products.total} results`;
     }
+
+    
+    createPagination(page, 10);
   } else {
     productContainer.innerHTML = "<p>No products available</p>";
   }
+}
+
+async function loadPage(pageNumber) {
+  await displayProducts(pageNumber);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -89,5 +168,67 @@ document.addEventListener("DOMContentLoaded", async () => {
     avatarElement.src = "./Images/user.png";
   };
 
-  await displayProducts();
+  
+  document.querySelector(".prev").addEventListener("click", async () => {
+    const currentPage = parseInt(
+      document.querySelector(".page-number.active").textContent
+    );
+    if (currentPage > 1) {
+      await loadPage(currentPage - 1);
+    }
+  });
+
+  document.querySelector(".next").addEventListener("click", async () => {
+    const currentPage = parseInt(
+      document.querySelector(".page-number.active").textContent
+    );
+    if (currentPage < 10) {
+      await loadPage(currentPage + 1);
+    }
+  });
+
+ 
+  const filterButton = document.querySelector(".filter-button");
+  const filterDropdown = document.querySelector(".filter-dropdown");
+  const applyFilterButton = document.querySelector(".apply-filter");
+  const priceFromInput = document.getElementById("priceFrom");
+  const priceToInput = document.getElementById("priceTo");
+
+ 
+  filterButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    filterDropdown.classList.toggle("active");
+  });
+
+  
+  document.addEventListener("click", (e) => {
+    if (
+      !filterDropdown.contains(e.target) &&
+      !filterButton.contains(e.target)
+    ) {
+      filterDropdown.classList.remove("active");
+    }
+  });
+
+  
+  applyFilterButton.addEventListener("click", async () => {
+    const fromValue = priceFromInput.value
+      ? Number(priceFromInput.value)
+      : null;
+    const toValue = priceToInput.value ? Number(priceToInput.value) : null;
+
+    
+    if (fromValue && toValue && fromValue > toValue) {
+      alert("Invalid price range");
+      return;
+    }
+
+    currentFilters.priceFrom = fromValue;
+    currentFilters.priceTo = toValue;
+
+    filterDropdown.classList.remove("active");
+    await displayProducts(1); 
+  });
+
+  await displayProducts(1);
 });

@@ -85,16 +85,90 @@ nav {
   margin-right: 80px;
 }
 .filter-sort {
+  position: relative;
+  margin-right: 32px;
+}
+
+.filter-button {
   display: flex;
   gap: 8px;
-  margin-right: 32px;
+  align-items: center;
   font-family: Poppins;
   font-weight: 400;
-  font-style: Regular;
   font-size: 16px;
   line-height: 100%;
-  letter-spacing: 0%;
   color: #10151f;
+  cursor: pointer;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 100%;
+  left: -320px;
+  margin-top: 12px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  width: 392px;
+  padding: 20px;
+  display: none;
+  z-index: 1000;
+}
+
+.filter-dropdown.active {
+  display: block;
+}
+
+.filter-content h3 {
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 16px;
+  color: #10151f;
+  margin-bottom: 12px;
+}
+
+.price-inputs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.price-input input {
+  width: 172px;
+  height: 36px;
+  border: 1px solid #e6e6e7;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-family: Poppins;
+  font-size: 14px;
+  outline: none;
+}
+
+.price-input input:focus {
+  border-color: #ff4d4d;
+}
+
+.price-input input::placeholder {
+  color: #888888;
+}
+
+.apply-filter {
+  width: 40%;
+  height: 36px;
+  background: #ff4d4d;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  float: right;
+}
+
+.apply-filter:hover {
+  background: #ff3333;
 }
 .sortby {
   display: flex;
@@ -114,19 +188,20 @@ nav {
   margin-top: 32px;
   display: grid;
   grid-template-columns: repeat(4, 412px);
-  gap: 113px 24px; 
+  gap: 113px 24px;
   justify-content: start;
 }
 
 .product-card {
-  width: 412px;
+  width: 400px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-left: 6px;
 }
 
 .product-image {
-  width: 412px;
+  width: 400px;
   height: 549px;
   background: #f2f2f2;
   object-fit: cover;
@@ -174,5 +249,53 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #3e424a;
+  gap: 16px;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.page-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-number {
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Poppins";
+  font-size: 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #000000;
+  border-radius: 4px;
+}
+
+.page-number.active {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.page-dots {
+  color: #000000;
+  font-family: "Poppins";
+  font-size: 16px;
+  padding: 0 4px;
 }

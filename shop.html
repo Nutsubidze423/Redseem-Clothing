@@ -37,8 +37,34 @@
             <p>Showing 1-10 of 100 results</p>
           </div>
           <div class="filter-sort">
-            <img src="./Images/Vector.png" alt="filter" />
-            <p>Filter</p>
+            <div class="filter-button">
+              <img src="./Images/Vector.png" alt="filter" />
+              <p>Filter</p>
+            </div>
+            <div class="filter-dropdown">
+              <div class="filter-content">
+                <h3>Select price</h3>
+                <div class="price-inputs">
+                  <div class="price-input">
+                    <input
+                      type="number"
+                      id="priceFrom"
+                      placeholder="From"
+                      min="0"
+                    />
+                  </div>
+                  <div class="price-input">
+                    <input
+                      type="number"
+                      id="priceTo"
+                      placeholder="To"
+                      min="0"
+                    />
+                  </div>
+                </div>
+                <button class="apply-filter">Apply</button>
+              </div>
+            </div>
           </div>
           <div class="sortby">
             <p>Sort By</p>
@@ -109,9 +135,7 @@
               class="product-image"
             />
             <div class="product-info">
-              <div class="product-name">
-               
-              </div>
+              <div class="product-name"></div>
               <div class="product-price"></div>
             </div>
           </div>
@@ -122,9 +146,7 @@
               class="product-image"
             />
             <div class="product-info">
-              <div class="product-name">
-               
-              </div>
+              <div class="product-name"></div>
               <div class="product-price"></div>
             </div>
           </div>
@@ -135,9 +157,7 @@
               class="product-image"
             />
             <div class="product-info">
-              <div class="product-name">
-               
-              </div>
+              <div class="product-name"></div>
               <div class="product-price"></div>
             </div>
           </div>
@@ -148,9 +168,7 @@
               class="product-image"
             />
             <div class="product-info">
-              <div class="product-name">
-               
-              </div>
+              <div class="product-name"></div>
               <div class="product-price"></div>
             </div>
           </div>
@@ -161,15 +179,25 @@
               class="product-image"
             />
             <div class="product-info">
-              <div class="product-name">
-               
-              </div>
+              <div class="product-name"></div>
               <div class="product-price"></div>
             </div>
           </div>
-          
         </div>
-        <div class="pageswitcher"></div>
+        <div class="pageswitcher">
+          <button class="page-arrow prev" aria-label="Previous page">
+            <img src="./Images/Vector 4 (Stroke).png" alt="Previous" />
+          </button>
+          <div class="page-numbers">
+          </div>
+          <button class="page-arrow next" aria-label="Next page">
+            <img
+              src="./Images/Vector 4 (Stroke).png"
+              alt="Next"
+              style="transform: rotate(180deg)"
+            />
+          </button>
+        </div>
       </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
