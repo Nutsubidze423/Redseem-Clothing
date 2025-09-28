@@ -1,3 +1,4 @@
+// Cookie management functions
 function getCookie(name) {
   const cookies = document.cookie.split(";");
   for (let cookie of cookies) {
@@ -13,11 +14,13 @@ function deleteCookie(name) {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 }
 
+// Store current filter state
 let currentFilters = {
   priceFrom: null,
   priceTo: null,
 };
 
+// Fetch products from API with pagination and filters
 async function fetchProducts(page = 1) {
   try {
     const token = getCookie("authToken");
@@ -25,15 +28,15 @@ async function fetchProducts(page = 1) {
       throw new Error("No auth token found");
     }
 
-    let url = `https://api.redseam.redberryinternship.ge/api/products?page=${page}`;
-
-    
-    if (currentFilters.priceFrom !== null) {
-      url += `&priceFrom=${currentFilters.priceFrom}`;
+    const params = new URLSearchParams();
+    params.append("page", page.toString());
+    if (currentFilters.priceFrom !== null && currentFilters.priceFrom !== "") {
+      params.append("filter[price_from]", currentFilters.priceFrom.toString());
     }
-    if (currentFilters.priceTo !== null) {
-      url += `&priceTo=${currentFilters.priceTo}`;
+    if (currentFilters.priceTo !== null && currentFilters.priceTo !== "") {
+      params.append("filter[price_to]", currentFilters.priceTo.toString());
     }
+    const url = `https://api.redseam.redberryinternship.ge/api/products?${params.toString()}`;
 
     const response = await axios.get(url, {
       headers: {
@@ -51,16 +54,22 @@ function createProductCard(product) {
   const card = document.createElement("div");
   card.className = "product-card";
 
+  const imageUrl =
+    product.cover_image || "https://via.placeholder.com/300x400?text=No+Image";
+
   card.innerHTML = `
-    <img src="${product.cover_image}" alt="${product.name}" class="product-image">
+    <img src="${imageUrl}" alt="${
+    product.name
+  }" class="product-image" onerror="this.src='https://via.placeholder.com/300x400?text=Error+Loading+Image'">
     <div class="product-info">
-      <div class="product-name">${product.name}</div>
-      <div class="product-price">$ ${product.price}</div>
+      <div class="product-name">${product.name || "Unnamed Product"}</div>
+      <div class="product-price">$ ${product.price || "0.00"}</div>
     </div>
   `;
   return card;
 }
 
+// Create pagination controls with dynamic page numbers
 function createPagination(currentPage, totalPages) {
   const pageNumbers = document.querySelector(".page-numbers");
   pageNumbers.innerHTML = "";
@@ -80,15 +89,12 @@ function createPagination(currentPage, totalPages) {
     return dots;
   }
 
- 
   const prevButton = document.querySelector(".prev");
   prevButton.disabled = currentPage === 1;
 
-  
   const nextButton = document.querySelector(".next");
   nextButton.disabled = currentPage === totalPages;
 
- 
   if (currentPage <= 4) {
     for (let i = 1; i <= Math.min(5, totalPages); i++) {
       pageNumbers.appendChild(addPageButton(i));
@@ -97,17 +103,13 @@ function createPagination(currentPage, totalPages) {
       pageNumbers.appendChild(addDots());
       pageNumbers.appendChild(addPageButton(totalPages));
     }
-  }
-  
-  else if (currentPage > totalPages - 4) {
+  } else if (currentPage > totalPages - 4) {
     pageNumbers.appendChild(addPageButton(1));
     pageNumbers.appendChild(addDots());
     for (let i = totalPages - 4; i <= totalPages; i++) {
       pageNumbers.appendChild(addPageButton(i));
     }
-  }
- 
-  else {
+  } else {
     pageNumbers.appendChild(addPageButton(1));
     pageNumbers.appendChild(addDots());
     for (let i = currentPage - 1; i <= currentPage + 1; i++) {
@@ -118,29 +120,40 @@ function createPagination(currentPage, totalPages) {
   }
 }
 
+// Display products with pagination and loading state
 async function displayProducts(page = 1) {
   const productContainer = document.getElementById("productContainer");
-  const products = await fetchProducts(page);
+  productContainer.innerHTML = "<p>Loading...</p>";
 
-  if (products && products.data) {
-    productContainer.innerHTML = "";
+  try {
+    const products = await fetchProducts(page);
 
-    products.data.forEach((product) => {
-      const card = createProductCard(product);
-      productContainer.appendChild(card);
-    });
+    if (products && products.data && products.data.length > 0) {
+      productContainer.innerHTML = "";
 
-    const resultsCount = document.querySelector(".right-side-bar p");
-    if (resultsCount) {
-      const start = (page - 1) * products.data.length + 1;
-      const end = start + products.data.length - 1;
-      resultsCount.textContent = `Showing ${start}-${end} of ${products.total} results`;
+      products.data.forEach((product) => {
+        const card = createProductCard(product);
+        productContainer.appendChild(card);
+      });
+
+      const resultsCount = document.querySelector(".right-side-bar p");
+      if (resultsCount) {
+        const start = (page - 1) * products.data.length + 1;
+        const end = start + products.data.length - 1;
+        const totalItems = products.meta?.total || products.data.length;
+        resultsCount.textContent = `Showing ${start}-${end} of ${totalItems} results`;
+      }
+
+      const totalPages = products.meta?.last_page || 1;
+      createPagination(page, totalPages);
+    } else {
+      productContainer.innerHTML =
+        "<p>No products found for the selected filters</p>";
     }
-
-    
-    createPagination(page, 10);
-  } else {
-    productContainer.innerHTML = "<p>No products available</p>";
+  } catch (error) {
+    console.error("Error displaying products:", error);
+    productContainer.innerHTML =
+      "<p>Error loading products. Please try again.</p>";
   }
 }
 
@@ -149,6 +162,7 @@ async function loadPage(pageNumber) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// Initialize page and setup event handlers
 document.addEventListener("DOMContentLoaded", async () => {
   const token = getCookie("authToken");
   if (!token) {
@@ -168,7 +182,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     avatarElement.src = "./Images/user.png";
   };
 
-  
   document.querySelector(".prev").addEventListener("click", async () => {
     const currentPage = parseInt(
       document.querySelector(".page-number.active").textContent
@@ -182,25 +195,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentPage = parseInt(
       document.querySelector(".page-number.active").textContent
     );
-    if (currentPage < 10) {
+    const lastPageButton =
+      document.querySelector(".page-numbers").lastElementChild;
+    const totalPages = parseInt(lastPageButton.textContent);
+
+    if (currentPage < totalPages) {
       await loadPage(currentPage + 1);
     }
   });
 
- 
+  // Setup price filter controls
   const filterButton = document.querySelector(".filter-button");
   const filterDropdown = document.querySelector(".filter-dropdown");
   const applyFilterButton = document.querySelector(".apply-filter");
   const priceFromInput = document.getElementById("priceFrom");
   const priceToInput = document.getElementById("priceTo");
 
- 
   filterButton.addEventListener("click", (e) => {
     e.stopPropagation();
     filterDropdown.classList.toggle("active");
   });
 
-  
   document.addEventListener("click", (e) => {
     if (
       !filterDropdown.contains(e.target) &&
@@ -210,24 +225,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  
   applyFilterButton.addEventListener("click", async () => {
-    const fromValue = priceFromInput.value
-      ? Number(priceFromInput.value)
-      : null;
-    const toValue = priceToInput.value ? Number(priceToInput.value) : null;
+    let fromValue = priceFromInput.value.trim();
+    let toValue = priceToInput.value.trim();
 
-    
-    if (fromValue && toValue && fromValue > toValue) {
-      alert("Invalid price range");
+    const fromNumber = fromValue ? Number(fromValue) : null;
+    const toNumber = toValue ? Number(toValue) : null;
+
+    if (fromValue && isNaN(fromNumber)) {
+      alert("Please enter a valid number for minimum price");
+      return;
+    }
+    if (toValue && isNaN(toNumber)) {
+      alert("Please enter a valid number for maximum price");
       return;
     }
 
-    currentFilters.priceFrom = fromValue;
-    currentFilters.priceTo = toValue;
+    if (fromNumber !== null && toNumber !== null && fromNumber > toNumber) {
+      alert(
+        'Invalid price range: "From" value cannot be greater than "To" value'
+      );
+      return;
+    }
+
+    currentFilters.priceFrom = fromNumber;
+    currentFilters.priceTo = toNumber;
 
     filterDropdown.classList.remove("active");
-    await displayProducts(1); 
+    await displayProducts(1);
   });
 
   await displayProducts(1);
