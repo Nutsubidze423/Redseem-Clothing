@@ -14,10 +14,35 @@ function deleteCookie(name) {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 }
 
+// Function to update active filters display
+function updateActiveFilters() {
+  const activeFiltersContainer = document.querySelector(".active-filters");
+  activeFiltersContainer.innerHTML = "";
+
+  if (currentFilters.priceFrom || currentFilters.priceTo) {
+    const filterTag = document.createElement("div");
+    filterTag.className = "filter-tag";
+    filterTag.innerHTML = `
+      Price: ${currentFilters.priceFrom || 0} - ${currentFilters.priceTo || "∞"}
+      <span class="remove-filter" onclick="clearPriceFilter()">×</span>
+    `;
+    activeFiltersContainer.appendChild(filterTag);
+  }
+}
+
+function clearPriceFilter() {
+  currentFilters.priceFrom = null;
+  currentFilters.priceTo = null;
+  document.getElementById("priceFrom").value = "";
+  document.getElementById("priceTo").value = "";
+  displayProducts(1);
+}
+
 // Store current filter state
 let currentFilters = {
   priceFrom: null,
   priceTo: null,
+  sort: null,
 };
 
 // Fetch products from API with pagination and filters
@@ -36,6 +61,10 @@ async function fetchProducts(page = 1) {
     if (currentFilters.priceTo !== null && currentFilters.priceTo !== "") {
       params.append("filter[price_to]", currentFilters.priceTo.toString());
     }
+    if (currentFilters.sort) {
+      params.append("sort", currentFilters.sort);
+    }
+    updateActiveFilters();
     const url = `https://api.redseam.redberryinternship.ge/api/products?${params.toString()}`;
 
     const response = await axios.get(url, {
@@ -53,6 +82,10 @@ async function fetchProducts(page = 1) {
 function createProductCard(product) {
   const card = document.createElement("div");
   card.className = "product-card";
+  card.style.cursor = "pointer";
+  card.onclick = () => {
+    window.location.href = `product.html?id=${product.id}`;
+  };
 
   const imageUrl =
     product.cover_image || "https://via.placeholder.com/300x400?text=No+Image";
@@ -253,6 +286,35 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     filterDropdown.classList.remove("active");
     await displayProducts(1);
+  });
+
+  // Sort functionality
+  const sortbyButton = document.querySelector(".sortby");
+  const sortDropdown = document.querySelector(".sort-dropdown");
+  const sortOptions = document.querySelectorAll(".sort-option");
+
+  // Toggle sort dropdown
+  sortbyButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    sortDropdown.classList.toggle("active");
+  });
+
+  // Close sort dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!sortDropdown?.contains(e.target) && !sortbyButton.contains(e.target)) {
+      sortDropdown?.classList.remove("active");
+    }
+  });
+
+  // Handle sort option selection
+  sortOptions.forEach((option) => {
+    option.addEventListener("click", async () => {
+      const sortValue = option.dataset.sort;
+      currentFilters.sort = sortValue;
+      sortbyButton.querySelector("p").textContent = option.textContent;
+      sortDropdown.classList.remove("active");
+      await displayProducts(1);
+    });
   });
 
   await displayProducts(1);

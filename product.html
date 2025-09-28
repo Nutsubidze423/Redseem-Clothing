@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RedSeam Clothing - Product Details</title>
+    <link rel="stylesheet" href="product.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <nav>
+          <div class="logo">
+            <a href="shop.html"
+              ><img src="./Images/Logo.png" alt="CompanyLogo"
+            /></a>
+          </div>
+          <div class="user-actions">
+            <div class="cart">
+              <a href="#"><img src="./Images/Union.png" alt="Cart" /></a>
+            </div>
+            <div class="user-profile">
+              <img
+                src=""
+                alt="User Avatar"
+                id="userAvatar"
+                class="user-avatar"
+              />
+            </div>
+          </div>
+        </nav>
+      </header>
+      <main>
+        <div class="breadcrumb">
+          <a href="shop.html">Listing</a>
+          <span>/</span>
+          <span class="current">Product</span>
+        </div>
+        <div class="product-details">
+          <div class="product-gallery">
+            <div class="thumbnail-list">
+              <!-- Thumbnails will be added here dynamically -->
+            </div>
+            <div class="main-image">
+              <!-- Main image will be added here dynamically -->
+            </div>
+          </div>
+          <div class="product-info">
+            <h1 class="product-title"></h1>
+            <div class="product-price">$ <span></span></div>
+
+            <div class="color-section">
+              <div class="color-label">Color: <span></span></div>
+              <div class="color-options">
+                <!-- Color options will be added here dynamically -->
+              </div>
+            </div>
+
+            <div class="size-section">
+              <div class="size-label">Size: <span></span></div>
+              <div class="size-options">
+                <!-- Size options will be added here dynamically -->
+              </div>
+            </div>
+
+            <div class="quantity-section">
+              <label>Quantity</label>
+              <div class="quantity-selector">
+                <button class="quantity-btn minus">-</button>
+                <input type="number" value="1" min="1" max="99" />
+                <button class="quantity-btn plus">+</button>
+              </div>
+            </div>
+
+            <button class="add-to-cart">Add to cart</button>
+
+            <div class="product-details-section">
+              <h2>Details</h2>
+              <div class="brand-info">
+                <p class="brand-name"></p>
+                <img class="brand-logo" alt="Brand Logo" />
+              </div>
+              <p class="product-description"></p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./product.js"></script>
+  </body>
+</html>

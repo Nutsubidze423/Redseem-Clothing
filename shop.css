@@ -63,12 +63,44 @@ nav {
 }
 .left-side-bar {
   font-family: Poppins;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.left-side-bar h2 {
   font-weight: 600;
   font-style: SemiBold;
-  font-size: 24px;
+  font-size: 32px;
   line-height: 100%;
   letter-spacing: 0%;
   color: #10151f;
+}
+
+.active-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-tag {
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 50px;
+  font-family: Poppins;
+  font-size: 12px;
+  margin-top: 10px;
+  color: #222222;
+  border: 1px solid #E1DFE1;
+}
+
+.filter-tag .remove-filter {
+  cursor: pointer;
+  color: #666;
+  font-weight: bold;
 }
 .right-side-bar {
   display: flex;
@@ -181,6 +213,59 @@ nav {
   line-height: 100%;
   letter-spacing: 0%;
   color: #10151f;
+  position: relative;
+  cursor: pointer;
+}
+
+.sort-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  padding: 8px;
+  display: none;
+  z-index: 1000;
+}
+
+.sort-dropdown.active {
+  display: block;
+}
+
+.sort-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sort-content h3 {
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 16px;
+  color: #10151f;
+  margin-bottom: 4px;
+  padding: 8px 12px;
+}
+
+.sort-option {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: Poppins;
+  font-size: 14px;
+  color: #10151f;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.sort-option:hover {
+  background-color: #f5f5f5;
 }
 .product-container {
   width: 1720px;

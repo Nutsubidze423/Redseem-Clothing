@@ -32,6 +32,7 @@
         <div class="filter-productbar">
           <div class="left-side-bar">
             <h2>Products</h2>
+            <div class="active-filters"></div>
           </div>
           <div class="right-side-bar">
             <p>Showing 1-10 of 100 results</p>
@@ -69,6 +70,20 @@
           <div class="sortby">
             <p>Sort By</p>
             <img src="./Images/chevron-down.png" alt="down" />
+            <div class="sort-dropdown">
+              <div class="sort-content">
+                <h3>Sort By</h3>
+                <button class="sort-option" data-sort="created_at">
+                  New products first
+                </button>
+                <button class="sort-option" data-sort="price">
+                  Price, low to high
+                </button>
+                <button class="sort-option" data-sort="-price">
+                  Price, high to low
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div class="product-container" id="productContainer">

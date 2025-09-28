@@ -1,0 +1,288 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper {
+  width: 1920px;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: rgb(250, 249, 249);
+}
+
+nav {
+  width: 1920px;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 100px;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.cart img {
+  width: 20px;
+  height: 19px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.breadcrumb {
+  padding: 24px 100px;
+  font-family: "Poppins";
+  font-size: 14px;
+  color: #222222;
+}
+
+.breadcrumb a {
+  color: #222222;
+  text-decoration: none;
+}
+
+.breadcrumb span {
+  margin: 0 8px;
+}
+
+.breadcrumb .current {
+  color: #888888;
+}
+
+.product-details {
+  padding: 0 100px;
+  display: flex;
+  gap: 64px;
+}
+
+.product-gallery {
+  display: flex;
+  gap: 24px;
+}
+
+.thumbnail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.thumbnail {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.thumbnail.active {
+  border: 2px solid #ff4d4d;
+}
+
+.main-image {
+  width: 560px;
+  height: 770px;
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.product-info {
+  flex: 1;
+  max-width: 584px;
+}
+
+.product-title {
+  font-family: "Poppins";
+  font-size: 32px;
+  font-weight: 500;
+  color: #222222;
+  margin-bottom: 16px;
+}
+
+.product-price {
+  font-family: "Poppins";
+  font-size: 24px;
+  font-weight: 500;
+  color: #222222;
+  margin-bottom: 32px;
+}
+
+.color-section,
+.size-section {
+  margin-bottom: 32px;
+}
+
+.color-label,
+.size-label {
+  font-family: "Poppins";
+  font-size: 16px;
+  color: #222222;
+  margin-bottom: 12px;
+}
+
+.color-options,
+.size-options {
+  display: flex;
+  gap: 8px;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.color-option.active {
+  border-color: #ff4d4d;
+}
+
+.size-option {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Poppins";
+  font-size: 14px;
+  color: #222222;
+  cursor: pointer;
+  background: white;
+}
+
+.size-option.active {
+  background: #ff4d4d;
+  color: white;
+  border-color: #ff4d4d;
+}
+
+.quantity-section {
+  margin-bottom: 32px;
+}
+
+.quantity-section label {
+  display: block;
+  font-family: "Poppins";
+  font-size: 16px;
+  color: #222222;
+  margin-bottom: 12px;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid #e6e6e7;
+  border-radius: 8px;
+}
+
+.quantity-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #222222;
+}
+
+.quantity-selector input {
+  width: 48px;
+  height: 48px;
+  border: none;
+  text-align: center;
+  font-family: "Poppins";
+  font-size: 16px;
+  color: #222222;
+  -moz-appearance: textfield;
+}
+
+.quantity-selector input::-webkit-outer-spin-button,
+.quantity-selector input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.add-to-cart {
+  width: 100%;
+  height: 48px;
+  background: #ff4d4d;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-family: "Poppins";
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 48px;
+}
+
+.add-to-cart:hover {
+  background: #ff3333;
+}
+
+.product-details-section {
+  border-top: 1px solid #e6e6e7;
+  padding-top: 32px;
+}
+
+.product-details-section h2 {
+  font-family: "Poppins";
+  font-size: 20px;
+  font-weight: 500;
+  color: #222222;
+  margin-bottom: 24px;
+}
+
+.brand-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.brand-name {
+  font-family: "Poppins";
+  font-size: 16px;
+  color: #222222;
+}
+
+.brand-logo {
+  height: 24px;
+}
+
+.product-description {
+  font-family: "Poppins";
+  font-size: 14px;
+  line-height: 1.5;
+  color: #888888;
+}
