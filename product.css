@@ -74,7 +74,7 @@ nav {
 .product-details {
   padding: 0 100px;
   display: flex;
-  gap: 64px;
+  gap: 168px;
 }
 
 .product-gallery {
@@ -89,8 +89,8 @@ nav {
 }
 
 .thumbnail {
-  width: 100px;
-  height: 100px;
+  width: 121px;
+  height: 161px;
   border-radius: 8px;
   cursor: pointer;
   object-fit: cover;
@@ -101,8 +101,10 @@ nav {
 }
 
 .main-image {
-  width: 560px;
-  height: 770px;
+  width: 703px;
+  height: 937px;
+  margin-bottom: 110px;
+  margin-right: 60px;
 }
 
 .main-image img {
@@ -110,6 +112,7 @@ nav {
   height: 100%;
   object-fit: cover;
   border-radius: 12px;
+  
 }
 
 .product-info {
@@ -135,7 +138,7 @@ nav {
 
 .color-section,
 .size-section {
-  margin-bottom: 32px;
+  margin-bottom: 53px;
 }
 
 .color-label,
@@ -153,36 +156,54 @@ nav {
 }
 
 .color-option {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid transparent;
+  border: 1px solid #ddd;
+  transition: all 0.2s ease;
+  padding: 0;
+  margin: 0 8px;
+  outline: none;
+  box-shadow: 0 0 0 1px white, 0 0 0 2px #ddd;
+}
+
+.color-option:hover {
+  transform: scale(1.05);
 }
 
 .color-option.active {
-  border-color: #ff4d4d;
+  box-shadow: 0 0 0 1px white, 0 0 0 2px #e1dfe1;
+}
+
+.color-option.white {
+  border: 1px solid #e0e0e0;
 }
 
 .size-option {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
   border: 1px solid #e6e6e7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-family: "Poppins";
   font-size: 14px;
   color: #222222;
   cursor: pointer;
   background: white;
+  transition: all 0.2s ease;
+  margin: 0 5px;
+  min-width: 45px;
+  text-align: center;
+}
+
+.size-option:hover {
+  border-color: #222222;
 }
 
 .size-option.active {
-  background: #ff4d4d;
-  color: white;
-  border-color: #ff4d4d;
+  background: white;
+  color: #222222;
+  border-color: #222222;
+  font-weight: 500;
 }
 
 .quantity-section {
@@ -198,38 +219,23 @@ nav {
 }
 
 .quantity-selector {
-  display: flex;
-  align-items: center;
-  width: fit-content;
+  width: 70px;
+  height: 48px;
   border: 1px solid #e6e6e7;
   border-radius: 8px;
-}
-
-.quantity-btn {
-  width: 48px;
-  height: 48px;
-  border: none;
-  background: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #222222;
-}
-
-.quantity-selector input {
-  width: 48px;
-  height: 48px;
-  border: none;
-  text-align: center;
+  padding: 0 12px;
   font-family: "Poppins";
   font-size: 16px;
   color: #222222;
-  -moz-appearance: textfield;
-}
-
-.quantity-selector input::-webkit-outer-spin-button,
-.quantity-selector input::-webkit-inner-spin-button {
+  cursor: pointer;
+  background-color: white;
+  appearance: none;
   -webkit-appearance: none;
-  margin: 0;
+  -moz-appearance: none;
+  background-image: url("./Images/chevron-down.png");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
 }
 
 .add-to-cart {
@@ -255,19 +261,26 @@ nav {
   padding-top: 32px;
 }
 
+.product-details-section {
+  position: relative;
+  margin-top: 56px;
+  margin-bottom: 56px;
+  
+}
+
 .product-details-section h2 {
   font-family: "Poppins";
+  margin-top: 40px;
   font-size: 20px;
+  margin-bottom: 22px;
   font-weight: 500;
   color: #222222;
   margin-bottom: 24px;
+  display: inline-block;
 }
 
 .brand-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 26px;
 }
 
 .brand-name {
@@ -277,7 +290,11 @@ nav {
 }
 
 .brand-logo {
-  height: 24px;
+  position: absolute;
+  top: 50px; /* Same as the padding-top of product-details-section */
+  right: 0;
+  height: 55px;
+  object-fit: contain;
 }
 
 .product-description {

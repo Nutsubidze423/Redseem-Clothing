@@ -25,15 +25,38 @@ async function fetchProductDetails(productId) {
       return;
     }
 
-    const response = await axios.get(
+    const response = await fetch(
       `https://api.redseam.redberryinternship.ge/api/products/${productId}`,
       {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Cache-Control": "no-cache",
         },
       }
     );
-    return response.data;
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch product details");
+    }
+
+    const data = await response.json();
+    console.log("API Response:", data);
+
+    // Check the actual data structure
+    const productData = {
+      ...data,
+      available_colors: data.available_colors || data.availableColors || [],
+      available_sizes: data.available_sizes || data.availableSizes || [],
+    };
+
+    console.log("Processed product data:", {
+      colors: productData.available_colors,
+      sizes: productData.available_sizes,
+    });
+
+    return productData;
   } catch (error) {
     console.error("Error fetching product:", error);
     return null;
@@ -41,7 +64,7 @@ async function fetchProductDetails(productId) {
 }
 
 // Update product images
-function updateProductImages(images, defaultImage) {
+function updateProductImages(images) {
   const thumbnailList = document.querySelector(".thumbnail-list");
   const mainImage = document.querySelector(".main-image");
 
@@ -49,20 +72,18 @@ function updateProductImages(images, defaultImage) {
   thumbnailList.innerHTML = "";
   mainImage.innerHTML = "";
 
-  // Add main image
+  // Create main image
   const mainImg = document.createElement("img");
-  mainImg.src = defaultImage;
+  mainImg.src = images[0]; // Start with first image
   mainImg.alt = "Product Image";
   mainImage.appendChild(mainImg);
 
-  // Add thumbnails
+  // Add all thumbnails
   images.forEach((imageUrl, index) => {
     const thumbnail = document.createElement("img");
     thumbnail.src = imageUrl;
     thumbnail.alt = `Product Thumbnail ${index + 1}`;
-    thumbnail.className = `thumbnail ${
-      imageUrl === defaultImage ? "active" : ""
-    }`;
+    thumbnail.className = `thumbnail ${index === 0 ? "active" : ""}`;
     thumbnail.addEventListener("click", () => {
       mainImg.src = imageUrl;
       document.querySelectorAll(".thumbnail").forEach((thumb) => {
@@ -72,86 +93,102 @@ function updateProductImages(images, defaultImage) {
     });
     thumbnailList.appendChild(thumbnail);
   });
+
+  // Function to update main image when color changes
+  window.updateMainImage = function (imageUrl) {
+    if (mainImg && imageUrl) {
+      mainImg.src = imageUrl;
+      // Update active thumbnail
+      document.querySelectorAll(".thumbnail").forEach((thumb) => {
+        thumb.classList.toggle("active", thumb.src === imageUrl);
+      });
+    }
+  };
 }
 
 // Update color options
-function updateColorOptions(colors, defaultColor) {
+function updateColorOptions(colors) {
   const colorOptions = document.querySelector(".color-options");
-  const colorLabel = document.querySelector(".color-label span");
-
   colorOptions.innerHTML = "";
-  colorLabel.textContent = defaultColor;
 
-  colors.forEach((color) => {
-    const colorOption = document.createElement("div");
-    colorOption.className = `color-option ${
-      color === defaultColor ? "active" : ""
-    }`;
-    colorOption.style.backgroundColor = color.toLowerCase();
-    colorOption.addEventListener("click", () => {
+  // Color to CSS color mapping
+  const colorMapping = {
+    white: "#FFFFFF",
+    blue: "#0000FF",
+    black: "#000000",
+    red: "#FF0000",
+    "baby pink": "#FFB6C1",
+    // Add more colors as needed
+  };
+
+  colors.forEach((color, index) => {
+    const colorButton = document.createElement("button");
+    colorButton.className = `color-option ${
+      index === 0 ? "active" : ""
+    } ${color.toLowerCase()}`;
+    colorButton.setAttribute("data-color-name", color); // Store the original color name
+    colorButton.style.backgroundColor =
+      colorMapping[color.toLowerCase()] || color.toLowerCase();
+
+    colorButton.addEventListener("click", () => {
+      // Find this color's index to get corresponding image
+      const colorIndex = window.availableColors.indexOf(color);
+      const imageForColor = window.productImages[colorIndex];
+
+      // Update active state of buttons
       document.querySelectorAll(".color-option").forEach((opt) => {
         opt.classList.remove("active");
       });
-      colorOption.classList.add("active");
-      colorLabel.textContent = color;
+      colorButton.classList.add("active");
+
+      // Update main image and active thumbnail
+      if (imageForColor) {
+        const mainImage = document.querySelector(".main-image img");
+        if (mainImage) {
+          mainImage.src = imageForColor;
+        }
+
+        // Update active thumbnail
+        document.querySelectorAll(".thumbnail").forEach((thumb) => {
+          thumb.classList.toggle("active", thumb.src === imageForColor);
+        });
+      }
     });
-    colorOptions.appendChild(colorOption);
+
+    colorOptions.appendChild(colorButton);
   });
 }
 
 // Update size options
-function updateSizeOptions(sizes, defaultSize) {
+function updateSizeOptions(sizes) {
   const sizeOptions = document.querySelector(".size-options");
-  const sizeLabel = document.querySelector(".size-label span");
-
   sizeOptions.innerHTML = "";
-  sizeLabel.textContent = defaultSize;
 
-  sizes.forEach((size) => {
-    const sizeOption = document.createElement("button");
-    sizeOption.className = `size-option ${
-      size === defaultSize ? "active" : ""
-    }`;
-    sizeOption.textContent = size;
-    sizeOption.addEventListener("click", () => {
+  sizes.forEach((size, index) => {
+    const sizeButton = document.createElement("button");
+    sizeButton.className = `size-option ${index === 0 ? "active" : ""}`;
+    sizeButton.textContent = size;
+
+    sizeButton.addEventListener("click", () => {
       document.querySelectorAll(".size-option").forEach((opt) => {
         opt.classList.remove("active");
       });
-      sizeOption.classList.add("active");
-      sizeLabel.textContent = size;
+      sizeButton.classList.add("active");
+      document.querySelector(".size-label").textContent = `Size: ${size}`;
     });
-    sizeOptions.appendChild(sizeOption);
+    sizeOptions.appendChild(sizeButton);
   });
 }
 
 // Handle quantity changes
 function setupQuantityControls() {
-  const minusBtn = document.querySelector(".minus");
-  const plusBtn = document.querySelector(".plus");
-  const quantityInput = document.querySelector(".quantity-selector input");
+  const quantitySelect = document.querySelector(".quantity-selector");
 
-  minusBtn.addEventListener("click", () => {
-    const currentValue = parseInt(quantityInput.value);
-    if (currentValue > 1) {
-      quantityInput.value = currentValue - 1;
+  quantitySelect.addEventListener("change", (event) => {
+    const selectedValue = parseInt(event.target.value);
+    if (isNaN(selectedValue) || selectedValue < 1 || selectedValue > 10) {
+      event.target.value = "1";
     }
-  });
-
-  plusBtn.addEventListener("click", () => {
-    const currentValue = parseInt(quantityInput.value);
-    if (currentValue < 99) {
-      quantityInput.value = currentValue + 1;
-    }
-  });
-
-  quantityInput.addEventListener("change", () => {
-    let value = parseInt(quantityInput.value);
-    if (isNaN(value) || value < 1) {
-      value = 1;
-    } else if (value > 99) {
-      value = 99;
-    }
-    quantityInput.value = value;
   });
 }
 
@@ -169,6 +206,65 @@ async function initializeProductPage() {
     return;
   }
 
+  // Add click handler for Add to Cart button
+  const addToCartBtn = document.querySelector(".add-to-cart");
+  addToCartBtn.addEventListener("click", () => {
+    console.log("Add to cart button clicked");
+
+    const selectedColorElement = document.querySelector(".color-option.active");
+    console.log("Selected color element:", selectedColorElement);
+
+    // Get color from data attribute
+    const selectedColor = selectedColorElement?.getAttribute("data-color-name");
+    console.log("Selected color:", selectedColor);
+
+    // Get size from the active size button
+    const selectedSizeElement = document.querySelector(".size-option.active");
+    const selectedSize = selectedSizeElement?.textContent?.trim();
+    console.log("Selected size:", selectedSize);
+
+    // Get quantity
+    const quantityInput = document.querySelector(".quantity-selector");
+    const quantity = parseInt(quantityInput?.value || "1");
+    console.log("Selected quantity:", quantity);
+
+    if (!selectedColor || !selectedSize) {
+      alert("Please select both color and size");
+      return;
+    }
+
+    console.log("Calling addToCart with:", {
+      productId,
+      quantity,
+      selectedColor,
+      selectedSize,
+    });
+
+    if (typeof window.cart?.addToCart !== "function") {
+      console.error("Cart not initialized properly");
+      alert("Cart not initialized properly. Please refresh the page.");
+      return;
+    }
+
+    // Get the image for the selected color
+    const colorIndex = window.availableColors.indexOf(selectedColor);
+    const selectedImage = window.productImages[colorIndex];
+    console.log("Selected image for cart:", {
+      colorIndex,
+      selectedColor,
+      selectedImage,
+      allImages: window.productImages,
+    });
+
+    window.cart.addToCart(
+      productId,
+      quantity,
+      selectedColor,
+      selectedSize,
+      selectedImage
+    );
+  });
+
   // Update page title
   document.title = `${product.name} - RedSeam Clothing`;
 
@@ -177,13 +273,32 @@ async function initializeProductPage() {
   document.querySelector(".product-price span").textContent = product.price;
   document.querySelector(".product-description").textContent =
     product.description;
-  document.querySelector(".brand-name").textContent = `Brand: ${product.brand}`;
-  document.querySelector(".brand-logo").src = product.brand_logo;
+  document.querySelector(".brand-name").textContent = "Brand: Tommy Hilfiger";
+  document.querySelector(".brand-logo").src = "./Images/image 6.png";
 
-  // Update images, colors, and sizes
-  updateProductImages(product.images, product.default_image);
-  updateColorOptions(product.colors, product.default_color);
-  updateSizeOptions(product.sizes, product.default_size);
+  // Update images and colors
+  const productImages = product.images || [];
+  const availableColors = product.available_colors || [];
+  const availableSizes = product.available_sizes || [];
+
+  console.log("Setting up product with:", {
+    images: productImages,
+    colors: availableColors,
+    sizes: availableSizes,
+  });
+
+  // Store images and colors globally for access in event handlers
+  window.productImages = productImages;
+  window.availableColors = availableColors;
+
+  // Show all images in thumbnails
+  updateProductImages(productImages);
+
+  // Update color options
+  updateColorOptions(availableColors);
+
+  // Update sizes from API
+  updateSizeOptions(availableSizes);
 
   // Setup quantity controls
   setupQuantityControls();
