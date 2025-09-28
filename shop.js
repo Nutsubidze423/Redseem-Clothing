@@ -14,6 +14,36 @@ function deleteCookie(name) {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 }
 
+function setupUserAvatar() {
+  const avatarElement = document.getElementById("userAvatar");
+  if (!avatarElement) {
+    return;
+  }
+
+  // Set default avatar
+  avatarElement.src = "./Images/user.png";
+
+  // Try to get custom avatar from localStorage
+  const userAvatar = localStorage.getItem("userAvatar");
+
+  if (
+    userAvatar &&
+    (userAvatar.startsWith("data:image") || userAvatar.startsWith("http"))
+  ) {
+    avatarElement.src = userAvatar;
+  }
+
+  // Handle image load errors
+  avatarElement.onerror = function () {
+    console.error("Avatar failed to load, falling back to default");
+    avatarElement.src = "./Images/user.png";
+  };
+
+  avatarElement.onload = function () {
+    // Avatar loaded successfully
+  };
+}
+
 // Function to update active filters display
 function updateActiveFilters() {
   const activeFiltersContainer = document.querySelector(".active-filters");
@@ -203,17 +233,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const avatarElement = document.getElementById("userAvatar");
-  avatarElement.src = "./Images/user.png";
-
-  const userAvatar = getCookie("userAvatar");
-  if (userAvatar && userAvatar.startsWith("data:image")) {
-    avatarElement.src = userAvatar;
-  }
-
-  avatarElement.onerror = function () {
-    avatarElement.src = "./Images/user.png";
-  };
+  // Setup user avatar with debugging
+  setupUserAvatar();
 
   document.querySelector(".prev").addEventListener("click", async () => {
     const currentPage = parseInt(

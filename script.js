@@ -115,8 +115,13 @@ loginFormElement.addEventListener("submit", async (e) => {
         },
       }
     );
-    console.log("Login success:", response.data);
     setCookie("authToken", response.data.token);
+
+    // Check if server returns avatar URL (profile_photo from API)
+    if (response.data.user && response.data.user.profile_photo) {
+      localStorage.setItem("userAvatar", response.data.user.profile_photo);
+    }
+
     window.location.href = "shop.html";
   } catch (error) {
     const rightSide = document.querySelector(".right-side");
@@ -278,31 +283,14 @@ registrationForm.addEventListener("submit", async (e) => {
       }
     );
 
-    console.log("Registration success:", response.data);
     setCookie("authToken", response.data.token);
 
-    if (avatar) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const avatarData = e.target.result;
-        console.log("Avatar data length:", avatarData.length);
-        setCookie("userAvatar", avatarData);
-        console.log("Avatar saved to cookie");
-
-    
-        const savedAvatar = getCookie("userAvatar");
-        console.log("Verified avatar cookie exists:", !!savedAvatar);
-
-        window.location.href = "shop.html";
-      };
-      reader.onerror = () => {
-        console.error("Error reading avatar file");
-        window.location.href = "shop.html";
-      };
-      reader.readAsDataURL(avatar);
-    } else {
-      window.location.href = "shop.html";
+    // Check if server returns avatar URL after registration
+    if (response.data.user && response.data.user.profile_photo) {
+      localStorage.setItem("userAvatar", response.data.user.profile_photo);
     }
+
+    window.location.href = "shop.html";
   } catch (error) {
     console.error("Registration error:", error.response?.data || error.message);
 

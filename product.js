@@ -42,7 +42,6 @@ async function fetchProductDetails(productId) {
     }
 
     const data = await response.json();
-    console.log("API Response:", data);
 
     // Check the actual data structure
     const productData = {
@@ -50,11 +49,6 @@ async function fetchProductDetails(productId) {
       available_colors: data.available_colors || data.availableColors || [],
       available_sizes: data.available_sizes || data.availableSizes || [],
     };
-
-    console.log("Processed product data:", {
-      colors: productData.available_colors,
-      sizes: productData.available_sizes,
-    });
 
     return productData;
   } catch (error) {
@@ -74,7 +68,7 @@ function updateProductImages(images) {
 
   // Create main image
   const mainImg = document.createElement("img");
-  mainImg.src = images[0]; // Start with first image
+  mainImg.src = images[0]; 
   mainImg.alt = "Product Image";
   mainImage.appendChild(mainImg);
 
@@ -98,7 +92,7 @@ function updateProductImages(images) {
   window.updateMainImage = function (imageUrl) {
     if (mainImg && imageUrl) {
       mainImg.src = imageUrl;
-      // Update active thumbnail
+      
       document.querySelectorAll(".thumbnail").forEach((thumb) => {
         thumb.classList.toggle("active", thumb.src === imageUrl);
       });
@@ -111,14 +105,14 @@ function updateColorOptions(colors) {
   const colorOptions = document.querySelector(".color-options");
   colorOptions.innerHTML = "";
 
-  // Color to CSS color mapping
+  
   const colorMapping = {
     white: "#FFFFFF",
     blue: "#0000FF",
     black: "#000000",
     red: "#FF0000",
     "baby pink": "#FFB6C1",
-    // Add more colors as needed
+    
   };
 
   colors.forEach((color, index) => {
@@ -126,29 +120,29 @@ function updateColorOptions(colors) {
     colorButton.className = `color-option ${
       index === 0 ? "active" : ""
     } ${color.toLowerCase()}`;
-    colorButton.setAttribute("data-color-name", color); // Store the original color name
+    colorButton.setAttribute("data-color-name", color); 
     colorButton.style.backgroundColor =
       colorMapping[color.toLowerCase()] || color.toLowerCase();
 
     colorButton.addEventListener("click", () => {
-      // Find this color's index to get corresponding image
+      
       const colorIndex = window.availableColors.indexOf(color);
       const imageForColor = window.productImages[colorIndex];
 
-      // Update active state of buttons
+    
       document.querySelectorAll(".color-option").forEach((opt) => {
         opt.classList.remove("active");
       });
       colorButton.classList.add("active");
 
-      // Update main image and active thumbnail
+      
       if (imageForColor) {
         const mainImage = document.querySelector(".main-image img");
         if (mainImage) {
           mainImage.src = imageForColor;
         }
 
-        // Update active thumbnail
+        
         document.querySelectorAll(".thumbnail").forEach((thumb) => {
           thumb.classList.toggle("active", thumb.src === imageForColor);
         });
@@ -209,36 +203,23 @@ async function initializeProductPage() {
   // Add click handler for Add to Cart button
   const addToCartBtn = document.querySelector(".add-to-cart");
   addToCartBtn.addEventListener("click", () => {
-    console.log("Add to cart button clicked");
-
     const selectedColorElement = document.querySelector(".color-option.active");
-    console.log("Selected color element:", selectedColorElement);
 
-    // Get color from data attribute
+    
     const selectedColor = selectedColorElement?.getAttribute("data-color-name");
-    console.log("Selected color:", selectedColor);
 
-    // Get size from the active size button
+    
     const selectedSizeElement = document.querySelector(".size-option.active");
     const selectedSize = selectedSizeElement?.textContent?.trim();
-    console.log("Selected size:", selectedSize);
 
-    // Get quantity
+    
     const quantityInput = document.querySelector(".quantity-selector");
     const quantity = parseInt(quantityInput?.value || "1");
-    console.log("Selected quantity:", quantity);
 
     if (!selectedColor || !selectedSize) {
       alert("Please select both color and size");
       return;
     }
-
-    console.log("Calling addToCart with:", {
-      productId,
-      quantity,
-      selectedColor,
-      selectedSize,
-    });
 
     if (typeof window.cart?.addToCart !== "function") {
       console.error("Cart not initialized properly");
@@ -246,15 +227,9 @@ async function initializeProductPage() {
       return;
     }
 
-    // Get the image for the selected color
+    
     const colorIndex = window.availableColors.indexOf(selectedColor);
     const selectedImage = window.productImages[colorIndex];
-    console.log("Selected image for cart:", {
-      colorIndex,
-      selectedColor,
-      selectedImage,
-      allImages: window.productImages,
-    });
 
     window.cart.addToCart(
       productId,
@@ -265,7 +240,7 @@ async function initializeProductPage() {
     );
   });
 
-  // Update page title
+
   document.title = `${product.name} - RedSeam Clothing`;
 
   // Update product details
@@ -276,42 +251,60 @@ async function initializeProductPage() {
   document.querySelector(".brand-name").textContent = "Brand: Tommy Hilfiger";
   document.querySelector(".brand-logo").src = "./Images/image 6.png";
 
-  // Update images and colors
+  
   const productImages = product.images || [];
   const availableColors = product.available_colors || [];
   const availableSizes = product.available_sizes || [];
 
-  console.log("Setting up product with:", {
-    images: productImages,
-    colors: availableColors,
-    sizes: availableSizes,
-  });
-
-  // Store images and colors globally for access in event handlers
+  
   window.productImages = productImages;
   window.availableColors = availableColors;
 
-  // Show all images in thumbnails
+  
   updateProductImages(productImages);
 
-  // Update color options
+  
   updateColorOptions(availableColors);
 
-  // Update sizes from API
+  
   updateSizeOptions(availableSizes);
 
-  // Setup quantity controls
+  
   setupQuantityControls();
 
-  // Setup avatar if exists
+  
+  setupUserAvatar();
+}
+
+function setupUserAvatar() {
   const avatarElement = document.getElementById("userAvatar");
-  avatarElement.src = "./Images/user.png";
-  const userAvatar = getCookie("userAvatar");
-  if (userAvatar && userAvatar.startsWith("data:image")) {
-    avatarElement.src = userAvatar;
+  if (!avatarElement) {
+    console.error("Avatar element not found!");
+    return;
   }
-  avatarElement.onerror = () => {
+
+  // Set default avatar
+  avatarElement.src = "./Images/user.png";
+
+  
+  const userAvatar = localStorage.getItem("userAvatar");
+
+  if (
+    userAvatar &&
+    (userAvatar.startsWith("data:image") || userAvatar.startsWith("http"))
+  ) {
+    avatarElement.src = userAvatar;
+  } else {
+  }
+
+  
+  avatarElement.onerror = function () {
+    console.error("Avatar failed to load, falling back to default");
     avatarElement.src = "./Images/user.png";
+  };
+
+  avatarElement.onload = function () {
+    
   };
 }
 

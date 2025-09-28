@@ -84,7 +84,6 @@ nav {
 }
 
 .filter-tag {
-
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -94,7 +93,7 @@ nav {
   font-size: 12px;
   margin-top: 10px;
   color: #222222;
-  border: 1px solid #E1DFE1;
+  border: 1px solid #e1dfe1;
 }
 
 .filter-tag .remove-filter {
