@@ -284,12 +284,25 @@ registrationForm.addEventListener("submit", async (e) => {
     if (avatar) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setCookie("userAvatar", e.target.result);
+        const avatarData = e.target.result;
+        console.log("Avatar data length:", avatarData.length);
+        setCookie("userAvatar", avatarData);
+        console.log("Avatar saved to cookie");
+
+    
+        const savedAvatar = getCookie("userAvatar");
+        console.log("Verified avatar cookie exists:", !!savedAvatar);
+
+        window.location.href = "shop.html";
+      };
+      reader.onerror = () => {
+        console.error("Error reading avatar file");
+        window.location.href = "shop.html";
       };
       reader.readAsDataURL(avatar);
+    } else {
+      window.location.href = "shop.html";
     }
-
-    window.location.href = "shop.html";
   } catch (error) {
     console.error("Registration error:", error.response?.data || error.message);
 
